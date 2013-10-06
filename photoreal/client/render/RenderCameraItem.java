@@ -78,7 +78,10 @@ public class RenderCameraItem implements IItemRenderer
 			}
 			case EQUIPPED_FIRST_PERSON:
 			{
-				isFirstPerson = true;
+				if(renderType == 0)
+				{
+					isFirstPerson = true;
+				}
 			}
 			case EQUIPPED:
 			{

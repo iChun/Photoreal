@@ -3,11 +3,12 @@ package photoreal.common.item;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -54,18 +55,25 @@ public class ItemCamera extends Item
     	list.add("Photoreal!");
     }
     
-//    @Override
-//    public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List itemList)
-//    {
-//    	if (this.itemID != Item.potion.itemID && this.itemID != Item.monsterPlacer.itemID)
-//    	{
-//    		for(int i = 0; i <= 4 ; i++)
-//    		{
-//    			ItemStack is = new ItemStack(this, 1, i);
-//    			NBTTagCompound tag = new NBTTagCompound();
-//    			is.setTagCompound(tag);
-//				itemList.add(is);
-//    		}
-//    	}
-//    }
+    @Override
+    public void onUpdate(ItemStack is, World world, Entity ent, int i, boolean flag) 
+    {
+    	if(!world.isRemote && is.getTagCompound() != null && is.getTagCompound().getInteger("recharge") > 0)
+    	{
+    		is.getTagCompound().setInteger("recharge", is.getTagCompound().getInteger("recharge") - 1);
+    	}
+    }
+    
+    @Override
+    public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List itemList)
+    {
+    	if (this.itemID != Item.potion.itemID && this.itemID != Item.monsterPlacer.itemID)
+    	{
+			ItemStack is = new ItemStack(this, 1);
+			NBTTagCompound tag = new NBTTagCompound();
+			tag.setInteger("recharge", 0);
+			is.setTagCompound(tag);
+			itemList.add(is);
+    	}
+    }
 }

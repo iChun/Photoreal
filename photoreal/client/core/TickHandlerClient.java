@@ -16,21 +16,24 @@ import ichun.core.ObfHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet131MapData;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
@@ -39,6 +42,7 @@ import org.lwjgl.opengl.GL11;
 
 import photoreal.client.render.TextureRender;
 import photoreal.common.Photoreal;
+import photoreal.common.entity.EntityPhotoreal;
 import photoreal.common.item.ItemCamera;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
@@ -194,6 +198,10 @@ public class TickHandlerClient
 					lookingDownCameraTimer = 0;
 				}
 			}
+			if(flashTimeout > 0)
+			{
+				flashTimeout--;
+			}
 		}
 		
 		if(mc.currentScreen == null && !hasScreen)
@@ -203,7 +211,36 @@ public class TickHandlerClient
 			{
 				if(!primaryKeyDown && isPressed(mc.gameSettings.keyBindAttack.keyCode))
 				{
-					
+					if(renderCameraOverlay && lookingDownCameraTimer == 10)
+					{
+						mc.sndManager.playSound("photoreal:shutter", (float)mc.thePlayer.posX, (float)(mc.thePlayer.posY), (float)mc.thePlayer.posZ, 0.3F, 1.0F);
+						if(currentInv.getTagCompound() != null && currentInv.getTagCompound().getInteger("recharge") <= 0)
+						{
+							mc.sndManager.playSound("photoreal:flash", (float)mc.thePlayer.posX, (float)(mc.thePlayer.posY), (float)mc.thePlayer.posZ, 0.3F, 1.0F);
+							flashTimeout = 3;
+							
+							ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+							DataOutputStream stream = new DataOutputStream(bytes);
+							try
+							{
+								stream.writeDouble(mc.thePlayer.posX);
+								stream.writeDouble(mc.thePlayer.posY);
+								stream.writeDouble(mc.thePlayer.posZ);
+								
+								stream.writeFloat(mc.thePlayer.rotationYaw);
+								stream.writeFloat(mc.thePlayer.rotationPitch);
+								
+								stream.writeInt(mc.displayWidth);
+								stream.writeInt(mc.displayHeight);
+								
+								PacketDispatcher.sendPacketToServer(new Packet131MapData((short)Photoreal.getNetId(), (short)0, bytes.toByteArray()));
+							}
+							catch(IOException e)
+							{
+								e.printStackTrace();
+							}
+						}
+					}
 				}
 				if(!secondaryKeyDown && isPressed(mc.gameSettings.keyBindUseItem.keyCode))
 				{
@@ -232,6 +269,101 @@ public class TickHandlerClient
             cameraPoV.updateResolution(screenWidth, screenHeight);
         }
         
+        for (int i = pendingRenders.size() - 1; i >= 0; i--) 
+        {
+			EntityPhotoreal photo = pendingRenders.get(i);
+			if(photo.worldObj != world)
+        	{
+				pendingRenders.remove(i);
+				continue;
+        	}
+			if(photo.tex == null)
+			{
+				photo.rendered = true;
+				pendingRenders.remove(i);
+				continue;
+			}
+            glPushMatrix();
+            glLoadIdentity();
+            
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, photo.tex.fbo);
+            
+            glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
+            
+            glColor3f(1, 0, 0);
+            
+            EntityLivingBase viewEntity = (EntityLivingBase) mc.renderViewEntity;
+            
+            double posX = viewEntity.posX;
+            double posY = viewEntity.posY;
+            double posZ = viewEntity.posZ;
+            float rotYaw = viewEntity.rotationYaw;
+            float rotPitch = viewEntity.rotationPitch;
+
+            float progress = 1.0F - (lookingDownCameraTimer / 10F);
+            
+            viewEntity.posX = (double)photo.getDataWatcher().getWatchableObjectFloat(16);
+            viewEntity.posY = (double)photo.getDataWatcher().getWatchableObjectFloat(17);
+            viewEntity.posZ = (double)photo.getDataWatcher().getWatchableObjectFloat(18);
+            
+            viewEntity.rotationYaw = photo.getDataWatcher().getWatchableObjectFloat(19);
+            viewEntity.rotationPitch = photo.getDataWatcher().getWatchableObjectFloat(20);
+            
+            boolean hideGui = mc.gameSettings.hideGUI;
+            mc.gameSettings.hideGUI = true;
+            
+            int tp = mc.gameSettings.thirdPersonView;
+            
+            mc.gameSettings.thirdPersonView = 0;
+            
+            mc.entityRenderer.renderWorld(1.0F, 0L);
+            
+            if(photo.fogR == 1.0D && photo.fogG == 1.0D && photo.fogB == 1.0D)
+            {
+                try
+                {
+                	photo.fogR = (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorRed);
+                	photo.fogG = (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorGreen);
+                	photo.fogB = (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorBlue);
+                }
+                catch(Exception e)
+                {
+                	e.printStackTrace();
+                	ObfHelper.obfWarning();
+                	Vec3 fog = Minecraft.getMinecraft().theWorld.getFogColor(1.0F); 
+                	photo.fogR = fog.xCoord;
+                	photo.fogG = fog.yCoord;
+                	photo.fogB = fog.zCoord;
+                }
+            }
+            
+            mc.gameSettings.thirdPersonView = tp;
+            
+            mc.gameSettings.hideGUI = hideGui;
+            
+            viewEntity.posX = posX;
+            viewEntity.posY = posY;
+            viewEntity.posZ = posZ;
+            viewEntity.rotationYaw = rotYaw;
+            viewEntity.rotationPitch = rotPitch;
+            
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+            
+            glPopMatrix();
+            
+            photo.rendered = true;
+            if(photo.getDataWatcher().getWatchableObjectInt(23) == 0)
+            {
+            	photo.flashTimeout = 3;
+            }
+            pendingRenders.remove(i);
+		}
+        
 		ItemStack currentInv = mc.thePlayer.getCurrentEquippedItem();
 		if(currentInv != null)
 		{
@@ -246,6 +378,16 @@ public class TickHandlerClient
 						ObfuscationReflectionHelper.setPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, 1.0F, ObfHelper.prevEquippedProgress);
 						ObfuscationReflectionHelper.setPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, mc.thePlayer.inventory.getCurrentItem(), ObfHelper.itemToRender);
 			            ReflectionHelper.setPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, mc.thePlayer.inventory.currentItem, ObfHelper.equippedItemSlot);
+			            
+			            int showName = (Integer)ObfuscationReflectionHelper.getPrivateValue(GuiIngame.class, mc.ingameGUI, ObfHelper.showNameTime);
+			            if(showName == 0)
+			            {
+			            	hasShownTooltip = true;
+			            }
+			            if(hasShownTooltip)
+			            {
+			            	ReflectionHelper.setPrivateValue(GuiIngame.class, mc.ingameGUI, 0, ObfHelper.showNameTime);
+			            }
 					}
 					catch(Exception e)
 					{
@@ -280,13 +422,15 @@ public class TickHandlerClient
 		}
 		if(!currentItemIsCamera)
 		{
+			shouldLookDownCamera = false;
 			renderCameraOverlay = false;
+			lookingDownCameraTimer = 0;
 		}
 	}
 	
 	public void renderTick(Minecraft mc, World world, float renderTick)
 	{
-    	if(!(mc.currentScreen != null && !(mc.currentScreen instanceof GuiChat)))
+    	if(!(mc.currentScreen != null && !(mc.currentScreen instanceof GuiChat)) && mc.gameSettings.thirdPersonView == 0)
     	{
     		if(renderCameraOverlay)
     		{
@@ -306,6 +450,14 @@ public class TickHandlerClient
 		        RendererHelper.drawColourOnScreen(0x00802A, 35, 0, 0, width, height, 90D);
 	
 		        RendererHelper.drawTextureOnScreen(texCamVignette, 0, 0, width, height, 90D);
+		        
+		        float flashProg = (float)Math.pow((flashTimeout - renderTick) / 3F, 2D);
+		        if(flashProg < 0.0F || flashTimeout == 0)
+		        {
+		        	flashProg = 0.0F;
+		        }
+		        
+		        RendererHelper.drawColourOnScreen(0xffffff, (int)(240F * flashProg), 0, 0, width, height, 90D);
 		        
 		        float brightness = 0.3F;
 		        GL11.glColor4f(brightness, brightness, brightness, 1.0F);
@@ -348,7 +500,17 @@ public class TickHandlerClient
 		        mc.fontRenderer.drawString(mc.theWorld.getWorldTime() % 24000L < 12000L ? "F2.9" : "F2.4", (int)(size + horiAlignReso - 6), (int)(height - size - vertAlignReso + 29), 0x817e72); // width height colour
 		        
 		        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		        RendererHelper.drawTextureOnScreen(texCamFlash, size + horiAlignReso + 20, height - size - vertAlignReso + 29, 7, 7, 90D);
+		        
+		        ItemStack is = mc.thePlayer.getCurrentEquippedItem();
+		        if(is != null && is.getItem() instanceof ItemCamera && is.getTagCompound() != null && (is.getTagCompound().getInteger("recharge") > 0 && mc.thePlayer.ticksExisted % 20L < 10L || is.getTagCompound().getInteger("recharge") == 0))
+		        {
+		        	if(is.getTagCompound().getInteger("recharge") > 0)
+		        	{
+		        		GL11.glColor4f(1.0F, 0.2F, 0.2F, 1.0F);
+		        	}
+		        	RendererHelper.drawTextureOnScreen(texCamFlash, size + horiAlignReso + 20, height - size - vertAlignReso + 29, 7, 7, 90D);
+		        	GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		        }
 		        
 		        GL11.glEnable(GL11.GL_ALPHA_TEST);
 		        GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -385,6 +547,7 @@ public class TickHandlerClient
     	return Keyboard.isKeyDown(key);
     }
     
+	private boolean hasShownTooltip;
     public int prevCurItem;
     public boolean currentItemIsCamera;
     
@@ -393,6 +556,7 @@ public class TickHandlerClient
     public float renderTick;
     public boolean shouldLookDownCamera;
     public int lookingDownCameraTimer;
+    public int flashTimeout;
     
     public boolean hasScreen;
     
@@ -417,4 +581,6 @@ public class TickHandlerClient
     public int screenHeight = Minecraft.getMinecraft().displayHeight;
     
     public TextureRender cameraPoV;
+    
+    public ArrayList<EntityPhotoreal> pendingRenders = new ArrayList<EntityPhotoreal>();
 }

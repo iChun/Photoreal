@@ -2,11 +2,14 @@ package photoreal.client.model;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import photoreal.common.Photoreal;
 import ichun.client.render.RendererHelper;
+import ichun.core.ObfHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
@@ -88,8 +91,18 @@ public class ModelCamera extends ModelBase
 	        Tessellator tessellator = Tessellator.instance;
 			
             GL11.glDisable(GL11.GL_TEXTURE_2D);
-            Vec3 fog = Minecraft.getMinecraft().theWorld.getFogColor(1.0F);
-            GL11.glColor3f((float)fog.xCoord, (float)fog.yCoord, (float)fog.zCoord);
+            try
+            {
+            	Minecraft mc = Minecraft.getMinecraft();
+            	GL11.glColor3f((Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorRed), (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorGreen), (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorBlue));
+            }
+            catch(Exception e)
+            {
+            	e.printStackTrace();
+            	ObfHelper.obfWarning();
+	            Vec3 fog = Minecraft.getMinecraft().theWorld.getFogColor(1.0F);
+	            GL11.glColor3f((float)fog.xCoord, (float)fog.yCoord, (float)fog.zCoord);
+            }
             tessellator.startDrawingQuads();
 	        tessellator.addVertexWithUV(posX, posY + height	, posZ		  , 0.0D, 0.0D);
 	        tessellator.addVertexWithUV(posX, posY + height	, posZ + width, 1.0D, 0.0D);
