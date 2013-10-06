@@ -56,6 +56,7 @@ public class Photoreal
 		config = ConfigHandler.createConfig(event.getSuggestedConfigurationFile(), "photoreal", "Photoreal", logger, instance);
 		
 		config.createOrUpdateItemIDProperty("itemID", "Item IDs", "cameraID", "Camera Item ID", "Item ID for the camera", 13610);
+		config.createOrUpdateIntProperty("clientOnly", "Client Only", "cameraFreq", "Camera PoV Update Frequency", "How often can the camera screen update it's Point of view?", true, 20, 0, 20);
 
 		MinecraftForge.EVENT_BUS.register(new photoreal.common.core.EventHandler());
 	}

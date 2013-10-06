@@ -1,5 +1,15 @@
 package photoreal.client.core;
 
+import static org.lwjgl.opengl.EXTFramebufferObject.GL_FRAMEBUFFER_EXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.glBindFramebufferEXT;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_STENCIL_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
 import ichun.client.render.RendererHelper;
 import ichun.core.ObfHelper;
 
@@ -14,9 +24,12 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet131MapData;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -24,6 +37,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import photoreal.client.render.TextureRender;
 import photoreal.common.Photoreal;
 import photoreal.common.item.ItemCamera;
 import cpw.mods.fml.common.ITickHandler;
@@ -36,6 +50,20 @@ public class TickHandlerClient
 	implements ITickHandler 
 {
 
+	public TickHandlerClient()
+	{
+		try
+		{
+			cameraPoV = new TextureRender();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			Photoreal.console("Your graphics card does not support this mod!", true);
+			cameraPoV = null;
+		}
+	}
+	
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) 
 	{
@@ -74,7 +102,7 @@ public class TickHandlerClient
 	@Override
 	public EnumSet<TickType> ticks() 
 	{
-		return EnumSet.of(TickType.RENDER);
+		return EnumSet.of(TickType.CLIENT, TickType.RENDER);
 	}
 
 	@Override
@@ -85,6 +113,108 @@ public class TickHandlerClient
 
 	public void worldTick(Minecraft mc, WorldClient world)
 	{
+		if(cameraPoV != null && world.getWorldTime() % ((20 - Photoreal.config.getInt("cameraFreq")) + 1) == 0)
+		{
+            glPushMatrix();
+            glLoadIdentity();
+            
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, cameraPoV.fbo);
+            
+            glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
+            
+            glColor3f(1, 0, 0);
+            
+            EntityLivingBase viewEntity = (EntityLivingBase) mc.renderViewEntity;
+            
+            double posX = viewEntity.posX;
+            double posY = viewEntity.posY;
+            double posZ = viewEntity.posZ;
+            float rotYaw = viewEntity.rotationYaw;
+
+            viewEntity.posX -= (double)(MathHelper.cos(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * 0.18F);
+            viewEntity.posY -= 0.10D;
+            viewEntity.posZ -= (double)(MathHelper.sin(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * 0.18F);
+            
+            viewEntity.posX += (double)(MathHelper.sin(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * -0.2F);
+            viewEntity.posZ -= (double)(MathHelper.cos(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * -0.2F);
+
+            viewEntity.rotationYaw -= 10F;
+            
+            boolean hideGui = mc.gameSettings.hideGUI;
+            mc.gameSettings.hideGUI = true;
+            
+            int tp = mc.gameSettings.thirdPersonView;
+            
+            mc.gameSettings.thirdPersonView = 0;
+            
+            mc.entityRenderer.renderWorld(1.0F, 0L);
+            
+            mc.gameSettings.thirdPersonView = tp;
+            
+            mc.gameSettings.hideGUI = hideGui;
+            
+            viewEntity.posX = posX;
+            viewEntity.posY = posY;
+            viewEntity.posZ = posZ;
+            viewEntity.rotationYaw = rotYaw;
+            
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+            
+            glPopMatrix();
+		}
+		
+		if(clock != mc.theWorld.getWorldTime() || !world.getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
+		{
+			clock = world.getWorldTime();
+
+			if(shouldLookDownCamera)
+			{
+				lookingDownCameraTimer++;
+				if(lookingDownCameraTimer == 40)
+				{
+					renderCameraOverlay = true;
+				}
+				if(lookingDownCameraTimer > 40)
+				{
+					lookingDownCameraTimer = 40;
+				}
+			}
+			else
+			{
+				lookingDownCameraTimer--;
+				if(lookingDownCameraTimer < 0)
+				{
+					lookingDownCameraTimer = 0;
+				}
+			}
+		}
+		
+		if(mc.currentScreen == null && !hasScreen)
+		{
+			ItemStack currentInv = mc.thePlayer.inventory.getCurrentItem();
+			if(currentInv != null && currentInv.getItem() instanceof ItemCamera)
+			{
+				if(!primaryKeyDown && isPressed(mc.gameSettings.keyBindAttack.keyCode))
+				{
+					
+				}
+				if(!secondaryKeyDown && isPressed(mc.gameSettings.keyBindUseItem.keyCode))
+				{
+					shouldLookDownCamera = !shouldLookDownCamera;
+					renderCameraOverlay = false;
+					System.out.println(shouldLookDownCamera);
+				}
+			}
+		}
+		hasScreen = mc.currentScreen != null;
+		
+		primaryKeyDown = isPressed(mc.gameSettings.keyBindAttack.keyCode);
+		secondaryKeyDown = isPressed(mc.gameSettings.keyBindUseItem.keyCode);
 	}
 	
 	public void playerTick(World world, EntityPlayer player)
@@ -93,6 +223,13 @@ public class TickHandlerClient
 	
 	public void preRenderTick(Minecraft mc, World world, float renderTick)
 	{
+        if (cameraPoV != null && (screenWidth != mc.displayWidth || screenHeight != mc.displayHeight))
+        {
+            screenWidth = mc.displayWidth;
+            screenHeight = mc.displayHeight;
+            cameraPoV.updateResolution(screenWidth, screenHeight);
+        }
+        
 		ItemStack currentInv = mc.thePlayer.getCurrentEquippedItem();
 		if(currentInv != null)
 		{
@@ -141,7 +278,7 @@ public class TickHandlerClient
 		}
 		if(!currentItemIsCamera)
 		{
-//			renderCameraOverlay = false;
+			renderCameraOverlay = false;
 		}
 	}
 	
@@ -149,7 +286,7 @@ public class TickHandlerClient
 	{
     	if(!(mc.currentScreen != null && !(mc.currentScreen instanceof GuiChat)))
     	{
-    		if(isPressed(Keyboard.KEY_TAB))
+    		if(renderCameraOverlay)
     		{
 		        ScaledResolution scaledresolution = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
 		        int width = scaledresolution.getScaledWidth();
@@ -247,7 +384,18 @@ public class TickHandlerClient
     
     public int prevCurItem;
     public boolean currentItemIsCamera;
+    
     public boolean renderCameraOverlay;
+    
+    public boolean shouldLookDownCamera;
+    public int lookingDownCameraTimer;
+    
+    public boolean hasScreen;
+    
+    public boolean primaryKeyDown;
+    public boolean secondaryKeyDown;
+    
+    public long clock;
     
     public static final ResourceLocation texCamTopLeft 		= new ResourceLocation("photoreal", "textures/camera/topleft.png");
     public static final ResourceLocation texCamTop 			= new ResourceLocation("photoreal", "textures/camera/top.png");
@@ -260,4 +408,9 @@ public class TickHandlerClient
     public static final ResourceLocation texCamCentral 		= new ResourceLocation("photoreal", "textures/camera/central.png");
     public static final ResourceLocation texCamVignette 	= new ResourceLocation("photoreal", "textures/camera/vignette.png");
     public static final ResourceLocation texCamFlash	 	= new ResourceLocation("photoreal", "textures/camera/flash.png");
+    
+    public int screenWidth = Minecraft.getMinecraft().displayWidth;
+    public int screenHeight = Minecraft.getMinecraft().displayHeight;
+    
+    public TextureRender cameraPoV;
 }
