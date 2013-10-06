@@ -15,6 +15,7 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 import photoreal.client.model.ModelCamera;
+import photoreal.common.Photoreal;
 
 
 public class RenderCameraItem implements IItemRenderer 
@@ -59,6 +60,7 @@ public class RenderCameraItem implements IItemRenderer
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) 
 	{
+		boolean isFirstPerson = false;
 		int renderType = 0;
 		switch(type)
 		{
@@ -75,25 +77,11 @@ public class RenderCameraItem implements IItemRenderer
 				}
 			}
 			case EQUIPPED_FIRST_PERSON:
+			{
+				isFirstPerson = true;
+			}
 			case EQUIPPED:
 			{
-				boolean isFirstPerson = false;
-				
-				RenderBlocks renderBlocks = (RenderBlocks)data[0];
-				
-				if(data[1] instanceof EntityPlayer && ((EntityPlayer)data[1] == Minecraft.getMinecraft().renderViewEntity && Minecraft.getMinecraft().gameSettings.thirdPersonView == 0 && !((Minecraft.getMinecraft().currentScreen instanceof GuiInventory || Minecraft.getMinecraft().currentScreen instanceof GuiContainerCreative) && RenderManager.instance.playerViewY == 180.0F)))
-				{
-					isFirstPerson = true;
-				}
-//				if(data[1] instanceof EntityLiving)
-//				{
-//					item = ((EntityLiving)data[1]).getHeldItem();
-//					if(item == null)
-//					{
-//						return;
-//					}
-//				}
-				
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 				GL11.glPushMatrix();
@@ -101,11 +89,36 @@ public class RenderCameraItem implements IItemRenderer
 				GL11.glEnable(GL11.GL_BLEND);
 		        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		        
-		        GL11.glRotatef(-10F, 1.0F, 0.0F, 0.0F);
-		        GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
+		        float progress = 0.0F;
+		        
+		        if(isFirstPerson)
+		        {
+		        	progress = (float)Math.pow(((Photoreal.proxy.tickHandlerClient.lookingDownCameraTimer + (Photoreal.proxy.tickHandlerClient.shouldLookDownCamera ? Photoreal.proxy.tickHandlerClient.renderTick : -Photoreal.proxy.tickHandlerClient.renderTick)) / 10D), 2D);
+		        }
+		        
+		        if(progress > 1.0F)
+		        {
+		        	progress = 1.0F;
+		        }
+		        if(Photoreal.proxy.tickHandlerClient.lookingDownCameraTimer == 0)
+		        {
+		        	progress = 0.0F;
+		        }
+		        
+		        float prog2 = progress;
+		        float offset = 0.75F;
+		        if(prog2 > offset)
+		        {
+		        	prog2 = (0.25F - (prog2 - offset)) / 0.25F * offset;
+		        }
+		        prog2 = (float)Math.pow(prog2 / offset, 0.75D);
+		        
+		        GL11.glRotatef(-18F * progress, 0.0F, -1.0F, 1.0F);
+		        GL11.glRotatef(-10F - 1F * progress, 1.0F, 0.0F, 0.0F);
+		        GL11.glRotatef(180F + 8F * progress, 0.0F, 0.0F, 1.0F);
 		        GL11.glRotatef(40F, 0.0F, 0.0F, 1.0F);
 		        
-		        GL11.glTranslatef(-0.85F, 0.18F, 0.15F);
+		        GL11.glTranslatef(-0.85F + 0.28F * progress - 0.24F * prog2, 0.18F - 0.67F * progress, 0.15F - 0.89F * progress);
 		        
 		        if(isFirstPerson)
 		        {
@@ -140,7 +153,7 @@ public class RenderCameraItem implements IItemRenderer
 					GL11.glScalef(scale1, scale1, scale1);
 				}
 				
-				if(isFirstPerson)
+				if(isFirstPerson && !(Photoreal.proxy.tickHandlerClient.shouldLookDownCamera && Photoreal.proxy.tickHandlerClient.lookingDownCameraTimer == 10))
 				{
 					Minecraft.getMinecraft().getTextureManager().bindTexture(Minecraft.getMinecraft().thePlayer.getLocationSkin());
 					modelCamera.renderArms(0.0625F);

@@ -136,14 +136,16 @@ public class TickHandlerClient
             double posZ = viewEntity.posZ;
             float rotYaw = viewEntity.rotationYaw;
 
-            viewEntity.posX -= (double)(MathHelper.cos(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * 0.18F);
-            viewEntity.posY -= 0.10D;
-            viewEntity.posZ -= (double)(MathHelper.sin(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * 0.18F);
+            float progress = 1.0F - (lookingDownCameraTimer / 10F);
             
-            viewEntity.posX += (double)(MathHelper.sin(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * -0.2F);
-            viewEntity.posZ -= (double)(MathHelper.cos(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * -0.2F);
+            viewEntity.posX -= (double)(MathHelper.cos(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * 0.18F) * progress;
+            viewEntity.posY -= 0.10D * progress;
+            viewEntity.posZ -= (double)(MathHelper.sin(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * 0.18F) * progress;
+            
+            viewEntity.posX += (double)(MathHelper.sin(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * -0.2F) * progress;
+            viewEntity.posZ -= (double)(MathHelper.cos(viewEntity.rotationYaw / 180.0F * (float)Math.PI) * -0.2F) * progress;
 
-            viewEntity.rotationYaw -= 10F;
+            viewEntity.rotationYaw -= 10F * progress;
             
             boolean hideGui = mc.gameSettings.hideGUI;
             mc.gameSettings.hideGUI = true;
@@ -175,13 +177,13 @@ public class TickHandlerClient
 			if(shouldLookDownCamera)
 			{
 				lookingDownCameraTimer++;
-				if(lookingDownCameraTimer == 40)
+				if(lookingDownCameraTimer == 10)
 				{
 					renderCameraOverlay = true;
 				}
-				if(lookingDownCameraTimer > 40)
+				if(lookingDownCameraTimer > 10)
 				{
-					lookingDownCameraTimer = 40;
+					lookingDownCameraTimer = 10;
 				}
 			}
 			else
@@ -207,7 +209,6 @@ public class TickHandlerClient
 				{
 					shouldLookDownCamera = !shouldLookDownCamera;
 					renderCameraOverlay = false;
-					System.out.println(shouldLookDownCamera);
 				}
 			}
 		}
@@ -223,6 +224,7 @@ public class TickHandlerClient
 	
 	public void preRenderTick(Minecraft mc, World world, float renderTick)
 	{
+		this.renderTick = renderTick;
         if (cameraPoV != null && (screenWidth != mc.displayWidth || screenHeight != mc.displayHeight))
         {
             screenWidth = mc.displayWidth;
@@ -350,6 +352,7 @@ public class TickHandlerClient
 		        
 		        GL11.glEnable(GL11.GL_ALPHA_TEST);
 		        GL11.glEnable(GL11.GL_DEPTH_TEST);
+		        GL11.glDepthMask(true);
 		        
 		        GL11.glDisable(GL11.GL_BLEND);
     		}
@@ -387,6 +390,7 @@ public class TickHandlerClient
     
     public boolean renderCameraOverlay;
     
+    public float renderTick;
     public boolean shouldLookDownCamera;
     public int lookingDownCameraTimer;
     

@@ -60,6 +60,10 @@ public class ModelCamera extends ModelBase
 
 	public void renderCamera(float f5, boolean isFirstPerson)
 	{
+		if(isFirstPerson && Photoreal.proxy.tickHandlerClient.shouldLookDownCamera && Photoreal.proxy.tickHandlerClient.lookingDownCameraTimer == 10)
+		{
+			return;
+		}
 		objective.render(f5);
 		if(isFirstPerson)
 		{
