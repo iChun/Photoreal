@@ -5,6 +5,7 @@ import ichun.core.config.Config;
 import ichun.core.config.ConfigHandler;
 import ichun.core.config.IConfigUser;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.minecraft.item.Item;
@@ -18,7 +19,9 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.FMLNetworkHandler;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.network.NetworkModHandler;
 
 @Mod(modid = "Photoreal", name = "Photoreal",
 			version = Photoreal.version,
@@ -68,4 +71,14 @@ public class Photoreal
 	{
 	}
 	
+    public static int getNetId()
+    {
+    	return ((NetworkModHandler)FMLNetworkHandler.instance().findNetworkModHandler(Photoreal.instance)).getNetworkId();
+    }
+    
+    public static void console(String s, boolean warning)
+    {
+    	StringBuilder sb = new StringBuilder();
+    	logger.log(warning ? Level.WARNING : Level.INFO, sb.append("[").append(version).append("] ").append(s).toString());
+    }
 }
