@@ -33,6 +33,7 @@ public class RenderPhotoreal extends Render
 			
 			if(photo.rendered)
 			{
+				GL11.glEnable(GL11.GL_CULL_FACE);
 				GL11.glPushMatrix();
 				
 				GL11.glTranslated(d, d1, d2);
