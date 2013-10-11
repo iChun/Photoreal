@@ -59,8 +59,8 @@ public class Photoreal
 		
 		config.createOrUpdateItemIDProperty("itemID", "Item IDs", "cameraID", "Camera Item ID", "Item ID for the camera", 13610);
 		config.createOrUpdateIntProperty("clientOnly", "Client Only", "cameraFreq", "Camera PoV Update Frequency", "How often can the camera screen update it's Point of view?", true, 20, 0, 20);
-		config.createOrUpdateIntProperty("gameplay", "Gameplay", "cameraRecharge", "Camera Recharge Rate", "What's the recharge rate of the camera's flash?", true, 400, 0, Integer.MAX_VALUE);
-		config.createOrUpdateIntProperty("gameplay", "Gameplay", "photorealDuration", "Photoreal Duration", "How long does the \"Photoreal\" effect last?", true, 100, 0, Integer.MAX_VALUE);
+		config.createOrUpdateIntProperty("gameplay", "Gameplay", "cameraRecharge", "Camera Recharge Rate", "What's the recharge rate of the camera's flash?", true, 100, 0, Integer.MAX_VALUE);
+		config.createOrUpdateIntProperty("gameplay", "Gameplay", "photorealDuration", "Photoreal Duration", "How long does the \"Photoreal\" effect last?", true, 400, 0, Integer.MAX_VALUE);
 		config.createOrUpdateIntProperty("gameplay", "Gameplay", "cameraRarity", "Camera Rarity", "The rarity of cameras in mineshaft corridors?", false, 1, 0, 100);
 
 		MinecraftForge.EVENT_BUS.register(new photoreal.common.core.EventHandler());
