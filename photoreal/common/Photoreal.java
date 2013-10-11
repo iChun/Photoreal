@@ -35,7 +35,7 @@ import cpw.mods.fml.common.network.NetworkModHandler;
 public class Photoreal 
 	implements IConfigUser
 {
-	public static final String version = "2.0.0";
+	public static final String version = "2.0.1";
 	
 	@Instance("Photoreal")
 	public static Photoreal instance;
