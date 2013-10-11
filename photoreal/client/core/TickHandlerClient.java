@@ -18,6 +18,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -27,6 +28,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -35,6 +37,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.common.FakePlayer;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -307,12 +310,28 @@ public class TickHandlerClient
 
             float progress = 1.0F - (lookingDownCameraTimer / 10F);
             
-            viewEntity.posX = (double)photo.getDataWatcher().getWatchableObjectFloat(16);
-            viewEntity.posY = (double)photo.getDataWatcher().getWatchableObjectFloat(17);
-            viewEntity.posZ = (double)photo.getDataWatcher().getWatchableObjectFloat(18);
+            EntityPlayer fakePlayer = new FakePlayer(mc.theWorld, mc.thePlayer.username);
+            mc.renderViewEntity = fakePlayer;
             
-            viewEntity.rotationYaw = photo.getDataWatcher().getWatchableObjectFloat(19);
-            viewEntity.rotationPitch = photo.getDataWatcher().getWatchableObjectFloat(20);
+            List ents = photo.worldObj.getEntitiesWithinAABBExcludingEntity(photo, photo.boundingBox.expand(0.1D, 0.1D, 0.1D));
+            
+            for(Object obj : ents)
+            {
+            	if(obj == mc.thePlayer)
+            	{
+            		mc.renderViewEntity = viewEntity;
+            		continue;
+            	}
+            	Entity ent = (Entity)obj;
+            	ent.posY -= 10D;
+            }
+            
+            fakePlayer.posX = (double)photo.getDataWatcher().getWatchableObjectFloat(16);
+            fakePlayer.posY = (double)photo.getDataWatcher().getWatchableObjectFloat(17);
+            fakePlayer.posZ = (double)photo.getDataWatcher().getWatchableObjectFloat(18);
+            
+            fakePlayer.rotationYaw = photo.getDataWatcher().getWatchableObjectFloat(19);
+            fakePlayer.rotationPitch = photo.getDataWatcher().getWatchableObjectFloat(20);
             
             boolean hideGui = mc.gameSettings.hideGUI;
             mc.gameSettings.hideGUI = true;
@@ -346,11 +365,23 @@ public class TickHandlerClient
             
             mc.gameSettings.hideGUI = hideGui;
             
+            mc.renderViewEntity = viewEntity;
             viewEntity.posX = posX;
             viewEntity.posY = posY;
             viewEntity.posZ = posZ;
             viewEntity.rotationYaw = rotYaw;
             viewEntity.rotationPitch = rotPitch;
+            
+            for(Object obj : ents)
+            {
+            	if(obj == mc.thePlayer)
+            	{
+            		mc.renderViewEntity = viewEntity;
+            		continue;
+            	}
+            	Entity ent = (Entity)obj;
+            	ent.posY += 10D;
+            }
             
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
             
