@@ -57,7 +57,6 @@ public class Photoreal
 	{
 		config = ConfigHandler.createConfig(event.getSuggestedConfigurationFile(), "photoreal", "Photoreal", logger, instance);
 
-        //TODO see issues page.
         if(FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
             config.setCurrentCategory("clientOnly", "photoreal.config.cat.clientOnly.name", "photoreal.config.cat.clientOnly.comment");
