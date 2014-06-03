@@ -29,11 +29,7 @@ public class CommonProxy
 		is.setTagCompound(tag);
 
 		ChestGenHooks.getInfo(ChestGenHooks.MINESHAFT_CORRIDOR).addItem(new WeightedRandomChestContent(is, 1, 1, Photoreal.config.getInt("cameraRarity")));
-		
-		tickHandlerServer = new TickHandlerServer();
-        FMLCommonHandler.instance().bus().register(tickHandlerServer);
 	}
 	
 	public TickHandlerClient tickHandlerClient;
-	public TickHandlerServer tickHandlerServer;
 }

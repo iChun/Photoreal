@@ -85,7 +85,6 @@ public class TickHandlerClient
 
                     float progress = 1.0F - (lookingDownCameraTimer / 10F);
 
-                    //TODO don't use fakeplayer. It's an entityplayerMP and is not meant to be used.
                     EntityOtherPlayerMP fakePlayer = new EntityOtherPlayerMP(mc.theWorld, new GameProfile("MorphClientDummyPlayer", mc.thePlayer.getCommandSenderName()));
                     mc.renderViewEntity = fakePlayer;
 

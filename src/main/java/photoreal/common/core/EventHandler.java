@@ -7,12 +7,15 @@ import ichun.client.keybind.KeyEvent;
 import ichun.common.core.network.PacketHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import photoreal.common.Photoreal;
+import photoreal.common.entity.EntityPhotoreal;
 import photoreal.common.item.ItemCamera;
 import photoreal.common.packet.PacketTakeSnapshot;
 
@@ -49,6 +52,27 @@ public class EventHandler
                         Photoreal.proxy.tickHandlerClient.shouldLookDownCamera = !Photoreal.proxy.tickHandlerClient.shouldLookDownCamera;
                         Photoreal.proxy.tickHandlerClient.renderCameraOverlay = false;
                     }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onLivingUpdate(LivingEvent.LivingUpdateEvent event)
+    {
+        if(!event.entityLiving.worldObj.isRemote && event.entityLiving instanceof EntityZombie)
+        {
+            EntityZombie zombie = (EntityZombie)event.entityLiving;
+            boolean currentItemIsCamera = zombie.getHeldItem() != null && zombie.getHeldItem().getItem() instanceof ItemCamera;
+            if(currentItemIsCamera)
+            {
+                if(zombie.getRNG().nextFloat() < 0.003F)
+                {
+                    EntityPhotoreal photo = new EntityPhotoreal(zombie.worldObj);
+                    photo.setLocationAndAngles(zombie.posX, zombie.posY + 1.62D, zombie.posZ, zombie.rotationYaw, zombie.rotationPitch);
+                    photo.setup(zombie.posX, zombie.posY + 1.62D, zombie.posZ, zombie.rotationYaw, zombie.rotationPitch, 860, 480);
+
+                    event.entityLiving.worldObj.spawnEntityInWorld(photo);
                 }
             }
         }
