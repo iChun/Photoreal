@@ -12,6 +12,8 @@ import ichun.common.core.config.Config;
 import ichun.common.core.config.ConfigHandler;
 import ichun.common.core.config.IConfigUser;
 import ichun.common.core.network.ChannelHandler;
+import ichun.common.core.updateChecker.ModVersionChecker;
+import ichun.common.core.updateChecker.ModVersionInfo;
 import ichun.common.iChunUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
@@ -27,7 +29,7 @@ import java.util.EnumMap;
 
 @Mod(modid = "Photoreal", name = "Photoreal",
 			version = Photoreal.version,
-            dependencies = "required-after:iChunUtil@[" + iChunUtil.versionMC +".0.0,)",
+            dependencies = "required-after:iChunUtil@[" + iChunUtil.versionMC +".1.0,)",
             acceptableRemoteVersions = "[" + iChunUtil.versionMC +".0.0," + iChunUtil.versionMC + ".1.0)"
 				)
 public class Photoreal
@@ -76,6 +78,8 @@ public class Photoreal
         proxy.initMod();
 
         channels = ChannelHandler.getChannelHandlers("Photoreal", PacketTakeSnapshot.class);
+
+        ModVersionChecker.register_iChunMod(new ModVersionInfo("Photoreal", "1.7", version, false));
 	}
 	
     public static void console(String s, boolean warning)

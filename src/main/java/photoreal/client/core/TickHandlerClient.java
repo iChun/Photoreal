@@ -15,6 +15,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
@@ -23,7 +24,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
-import photoreal.client.render.TextureRender;
 import photoreal.common.Photoreal;
 import photoreal.common.entity.EntityPhotoreal;
 import photoreal.common.item.ItemCamera;
@@ -35,22 +35,8 @@ import static org.lwjgl.opengl.EXTFramebufferObject.GL_FRAMEBUFFER_EXT;
 import static org.lwjgl.opengl.EXTFramebufferObject.glBindFramebufferEXT;
 import static org.lwjgl.opengl.GL11.*;
 
-public class TickHandlerClient 
+public class TickHandlerClient
 {
-	public TickHandlerClient()
-	{
-		try
-		{
-			cameraPoV = new TextureRender();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			Photoreal.console("Your graphics card does not support this mod!", true);
-			cameraPoV = null;
-		}
-	}
-
     @SubscribeEvent
     public void renderTick(TickEvent.RenderTickEvent event)
     {
@@ -60,13 +46,6 @@ public class TickHandlerClient
             if(event.phase == TickEvent.Phase.START)
             {
                 this.renderTick = event.renderTickTime;
-                //TODO this should be removed once TextureRender is moved to iChunUtil
-                if(cameraPoV != null && (screenWidth != mc.displayWidth || screenHeight != mc.displayHeight))
-                {
-                    screenWidth = mc.displayWidth;
-                    screenHeight = mc.displayHeight;
-                    cameraPoV.updateResolution(screenWidth, screenHeight);
-                }
 
                 for(int i = pendingRenders.size() - 1; i >= 0; i--)
                 {
@@ -85,7 +64,7 @@ public class TickHandlerClient
                     glPushMatrix();
                     glLoadIdentity();
 
-                    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, photo.tex.fbo);
+                    photo.tex.bindFramebuffer(true);
 
                     glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -352,8 +331,8 @@ public class TickHandlerClient
     }
 
     @SubscribeEvent
-	public void worldTick(TickEvent.ClientTickEvent event)
-	{
+    public void worldTick(TickEvent.ClientTickEvent event)
+    {
         Minecraft mc = Minecraft.getMinecraft();
         WorldClient world = mc.theWorld;
         if(event.phase == TickEvent.Phase.END && world != null)
@@ -363,7 +342,7 @@ public class TickHandlerClient
                 glPushMatrix();
                 glLoadIdentity();
 
-                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, cameraPoV.fbo);
+                cameraPoV.bindFramebuffer(true);
 
                 glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -410,7 +389,7 @@ public class TickHandlerClient
                 viewEntity.posZ = posZ;
                 viewEntity.rotationYaw = rotYaw;
 
-                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+                cameraPoV.unbindFramebuffer();
 
                 glPopMatrix();
 
@@ -449,23 +428,23 @@ public class TickHandlerClient
 
             hasScreen = mc.currentScreen != null;
         }
-	}
-	
-	private boolean hasShownTooltip;
+    }
+
+    private boolean hasShownTooltip;
     public int prevCurItem;
     public boolean currentItemIsCamera;
-    
+
     public boolean renderCameraOverlay;
-    
+
     public float renderTick;
     public boolean shouldLookDownCamera;
     public int lookingDownCameraTimer;
     public int flashTimeout;
-    
+
     public boolean hasScreen;
-    
+
     public long clock;
-    
+
     public static final ResourceLocation texCamTopLeft 		= new ResourceLocation("photoreal", "textures/camera/topleft.png");
     public static final ResourceLocation texCamTop 			= new ResourceLocation("photoreal", "textures/camera/top.png");
     public static final ResourceLocation texCamTopRight 	= new ResourceLocation("photoreal", "textures/camera/topright.png");
@@ -477,11 +456,11 @@ public class TickHandlerClient
     public static final ResourceLocation texCamCentral 		= new ResourceLocation("photoreal", "textures/camera/central.png");
     public static final ResourceLocation texCamVignette 	= new ResourceLocation("photoreal", "textures/camera/vignette.png");
     public static final ResourceLocation texCamFlash	 	= new ResourceLocation("photoreal", "textures/camera/flash.png");
-    
+
     public int screenWidth = Minecraft.getMinecraft().displayWidth;
     public int screenHeight = Minecraft.getMinecraft().displayHeight;
-    
-    public TextureRender cameraPoV;
-    
+
+    public Framebuffer cameraPoV = RendererHelper.createFrameBuffer("Photoreal", true);
+
     public ArrayList<EntityPhotoreal> pendingRenders = new ArrayList<EntityPhotoreal>();
 }
