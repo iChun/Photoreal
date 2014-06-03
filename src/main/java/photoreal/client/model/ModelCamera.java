@@ -1,11 +1,10 @@
 package photoreal.client.model;
 
+import ichun.common.core.util.ObfHelper;
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import photoreal.common.Photoreal;
-import ichun.client.render.RendererHelper;
-import ichun.core.ObfHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;

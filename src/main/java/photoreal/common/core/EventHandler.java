@@ -1,44 +1,76 @@
 package photoreal.common.core;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.event.sound.SoundLoadEvent;
-import net.minecraftforge.event.ForgeSubscribe;
-import net.minecraftforge.event.entity.player.EntityInteractEvent;
-import photoreal.common.Photoreal;
-import photoreal.common.item.ItemCamera;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import ichun.client.keybind.KeyEvent;
+import ichun.common.core.network.PacketHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.entity.player.EntityInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
+import photoreal.common.Photoreal;
+import photoreal.common.item.ItemCamera;
+import photoreal.common.packet.PacketTakeSnapshot;
 
 public class EventHandler 
 {
-
-	@SideOnly(Side.CLIENT)
-	@ForgeSubscribe
-	public void onSoundLoad(SoundLoadEvent event)
-	{
-		String[] soundFiles = new String[] { "flash.ogg", "shutter.ogg" };
-        for (String soundFile : soundFiles) 
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onKeyEvent(KeyEvent event)
+    {
+        Minecraft mc = Minecraft.getMinecraft();
+        if(mc.currentScreen == null && !Photoreal.proxy.tickHandlerClient.hasScreen)
         {
-        	try 
-        	{
-        		event.manager.soundPoolSounds.addSound("photoreal:" + soundFile);
-        	} 
-        	catch (Exception e) 
-        	{
-        		Photoreal.console("Failed to load sound file: " + soundFile, true);
-        	}
+            ItemStack currentInv = mc.thePlayer.inventory.getCurrentItem();
+            if(currentInv != null && currentInv.getItem() == Photoreal.itemCamera)
+            {
+                if(event.keyBind.isPressed())
+                {
+                    if(event.keyBind.keyIndex == mc.gameSettings.keyBindAttack.getKeyCode())
+                    {
+                        if(Photoreal.proxy.tickHandlerClient.renderCameraOverlay && Photoreal.proxy.tickHandlerClient.lookingDownCameraTimer == 10)
+                        {
+                            mc.getSoundHandler().playSound(new PositionedSoundRecord(new ResourceLocation("photoreal", "shutter"), 0.3F, 1.0F, (float)mc.thePlayer.posX, (float)(mc.thePlayer.posY), (float)mc.thePlayer.posZ));
+                            if(currentInv.getTagCompound() != null && currentInv.getTagCompound().getInteger("recharge") <= 0)
+                            {
+                                mc.getSoundHandler().playSound(new PositionedSoundRecord(new ResourceLocation("photoreal", "flash"), 0.3F, 1.0F, (float)mc.thePlayer.posX, (float)(mc.thePlayer.posY), (float)mc.thePlayer.posZ));
+                                Photoreal.proxy.tickHandlerClient.flashTimeout = 3;
+
+                                PacketHandler.sendToServer(Photoreal.channels, new PacketTakeSnapshot(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, mc.displayWidth, mc.displayHeight));
+                            }
+                        }
+                    }
+                    if(event.keyBind.keyIndex == mc.gameSettings.keyBindUseItem.getKeyCode())
+                    {
+                        Photoreal.proxy.tickHandlerClient.shouldLookDownCamera = !Photoreal.proxy.tickHandlerClient.shouldLookDownCamera;
+                        Photoreal.proxy.tickHandlerClient.renderCameraOverlay = false;
+                    }
+                }
+            }
         }
-	}
-	
-	@ForgeSubscribe
+    }
+
+	@SubscribeEvent
 	public void onInteract(EntityInteractEvent event)
 	{
-		if(holdingCamera(event.entityPlayer))
+        if(holdingCamera(event.entityPlayer))
 		{
 			event.setCanceled(true);
 		}
 	}
+
+    @SubscribeEvent
+    public void onBlockBreak(BlockEvent.BreakEvent event)
+    {
+        if(holdingCamera(event.getPlayer()))
+        {
+            event.setCanceled(true);
+        }
+    }
 	
 	public boolean holdingCamera(EntityPlayer player)
 	{

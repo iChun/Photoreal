@@ -26,6 +26,7 @@ import org.lwjgl.opengl.ARBFramebufferObject;
 
 public class TextureRender
 {
+    //TODO move this into iChunUtil and update to follow MC 1.7's framebuffer
     public TextureRender()
     {
         fbo = glGenFramebuffersEXT();                                         // create a new framebuffer

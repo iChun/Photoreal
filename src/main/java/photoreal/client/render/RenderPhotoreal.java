@@ -1,7 +1,6 @@
 package photoreal.client.render;
 
-import ichun.core.ObfHelper;
-
+import ichun.common.core.util.ObfHelper;
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.common.ObfuscationReflectionHelper;

@@ -1,0 +1,5 @@
+photoreal.config.cat.clientOnly.name=Client Only
+photoreal.config.cat.gameplay.name=Gameplay
+
+photoreal.config.cat.clientOnly.comment=These settings affect only the client that loads the mod.
+photoreal.config.cat.gameplay.comment=These options affect the gameplay while using the mod.

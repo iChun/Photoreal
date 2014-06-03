@@ -2,7 +2,7 @@ package photoreal.common.item;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,9 +15,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemCamera extends Item 
 {
-	public ItemCamera(int i)
+	public ItemCamera()
 	{
-		super(i);
         maxStackSize = 1;
         setMaxDamage(0);
         setHasSubtypes(true);
@@ -43,7 +42,7 @@ public class ItemCamera extends Item
     
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IconRegister reg)
+    public void registerIcons(IIconRegister reg)
     {
     	itemIcon = reg.registerIcon("photoreal:camera");
     }
@@ -65,15 +64,12 @@ public class ItemCamera extends Item
     }
     
     @Override
-    public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List itemList)
+    public void getSubItems(Item item, CreativeTabs tab, List itemList)
     {
-    	if (this.itemID != Item.potion.itemID && this.itemID != Item.monsterPlacer.itemID)
-    	{
-			ItemStack is = new ItemStack(this, 1);
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setInteger("recharge", 0);
-			is.setTagCompound(tag);
-			itemList.add(is);
-    	}
+        ItemStack is = new ItemStack(this, 1);
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.setInteger("recharge", 0);
+        is.setTagCompound(tag);
+        itemList.add(is);
     }
 }
