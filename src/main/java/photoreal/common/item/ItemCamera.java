@@ -9,6 +9,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -39,7 +41,13 @@ public class ItemCamera extends Item
     {
     	return true;
     }
-    
+
+    @Override
+    public String getItemStackDisplayName(ItemStack par1ItemStack)
+    {
+        return (EnumChatFormatting.AQUA.toString() + StatCollector.translateToLocal(this.getUnlocalizedNameInefficiently(par1ItemStack) + ".name")).trim();
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void registerIcons(IIconRegister reg)

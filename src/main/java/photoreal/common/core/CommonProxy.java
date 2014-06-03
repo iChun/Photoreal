@@ -23,9 +23,6 @@ public class CommonProxy
 
 		EntityRegistry.registerModEntity(EntityPhotoreal.class, "photoreal", 63, Photoreal.instance, 200, Integer.MAX_VALUE, false);
 
-        //TODO remove this.
-		LanguageRegistry.instance().addName(Photoreal.itemCamera, EnumChatFormatting.AQUA + "Camera");
-		
 		ItemStack is = new ItemStack(Photoreal.itemCamera, 1);
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setInteger("recharge", 0);

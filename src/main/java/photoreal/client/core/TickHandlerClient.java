@@ -6,7 +6,6 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import ichun.client.render.RendererHelper;
-import ichun.common.core.network.PacketHandler;
 import ichun.common.core.util.ObfHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
@@ -23,14 +22,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import photoreal.client.render.TextureRender;
 import photoreal.common.Photoreal;
 import photoreal.common.entity.EntityPhotoreal;
 import photoreal.common.item.ItemCamera;
-import photoreal.common.packet.PacketTakeSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -351,6 +347,7 @@ public class TickHandlerClient
                     }
                 }
             }
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
@@ -416,6 +413,8 @@ public class TickHandlerClient
                 glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
                 glPopMatrix();
+
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             }
 
             if(clock != mc.theWorld.getWorldTime() || !world.getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
@@ -464,9 +463,6 @@ public class TickHandlerClient
     public int flashTimeout;
     
     public boolean hasScreen;
-    
-    public boolean primaryKeyDown;
-    public boolean secondaryKeyDown;
     
     public long clock;
     

@@ -57,18 +57,19 @@ public class Photoreal
 	{
 		config = ConfigHandler.createConfig(event.getSuggestedConfigurationFile(), "photoreal", "Photoreal", logger, instance);
 
+        //TODO see issues page.
         if(FMLCommonHandler.instance().getEffectiveSide().isClient())
         {
             config.setCurrentCategory("clientOnly", "photoreal.config.cat.clientOnly.name", "photoreal.config.cat.clientOnly.comment");
-            config.createIntProperty("cameraFreq", "Camera PoV Update Frequency", "How often can the camera screen update it's Point of view?", true, false, 20, 0, 20);
+            config.createIntProperty("cameraFreq", "photoreal.config.prop.cameraFreq.name", "photoreal.config.prop.cameraFreq.comment", true, false, 20, 0, 20);
             iChunUtil.proxy.registerMinecraftKeyBind(Minecraft.getMinecraft().gameSettings.keyBindAttack);
             iChunUtil.proxy.registerMinecraftKeyBind(Minecraft.getMinecraft().gameSettings.keyBindUseItem);
         }
 
         config.setCurrentCategory("gameplay", "photoreal.config.cat.gameplay.name", "photoreal.config.cat.gameplay.comment");
-		config.createIntProperty("cameraRecharge", "Camera Recharge Rate", "What's the recharge rate of the camera's flash?", true, false, 100, 0, Integer.MAX_VALUE);
-		config.createIntProperty("photorealDuration", "Photoreal Duration", "How long does the \"Photoreal\" effect last?", true, false, 400, 0, Integer.MAX_VALUE);
-		config.createIntProperty("cameraRarity", "Camera Rarity", "The rarity of cameras in mineshaft corridors?", false, false, 1, 0, 100);
+		config.createIntProperty("cameraRecharge", "photoreal.config.prop.cameraRecharge.name", "photoreal.config.prop.cameraRecharge.comment", true, false, 100, 0, Integer.MAX_VALUE);
+		config.createIntProperty("photorealDuration", "photoreal.config.prop.photorealDuration.name", "photoreal.config.prop.photorealDuration.comment", true, false, 400, 0, Integer.MAX_VALUE);
+		config.createIntProperty("cameraRarity", "photoreal.config.prop.cameraRarity.name", "photoreal.config.prop.cameraRarity.comment", false, false, 1, 0, 100);
 
 
 		MinecraftForge.EVENT_BUS.register(new photoreal.common.core.EventHandler());
