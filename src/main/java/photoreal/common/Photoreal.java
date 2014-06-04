@@ -5,6 +5,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;
 import cpw.mods.fml.relauncher.Side;
@@ -17,6 +18,7 @@ import ichun.common.core.updateChecker.ModVersionInfo;
 import ichun.common.iChunUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Property;
 import org.apache.logging.log4j.Level;
@@ -72,7 +74,6 @@ public class Photoreal
 		config.createIntProperty("photorealDuration", "photoreal.config.prop.photorealDuration.name", "photoreal.config.prop.photorealDuration.comment", true, false, 400, 0, Integer.MAX_VALUE);
 		config.createIntProperty("cameraRarity", "photoreal.config.prop.cameraRarity.name", "photoreal.config.prop.cameraRarity.comment", false, false, 1, 0, 100);
 
-
 		MinecraftForge.EVENT_BUS.register(new photoreal.common.core.EventHandler());
 
         proxy.initMod();
@@ -80,6 +81,8 @@ public class Photoreal
         channels = ChannelHandler.getChannelHandlers("Photoreal", PacketTakeSnapshot.class);
 
         ModVersionChecker.register_iChunMod(new ModVersionInfo("Photoreal", "1.7", version, false));
+
+        FMLInterModComms.sendMessage("BackTools", "blacklist", new ItemStack(Photoreal.itemCamera, 1));
 	}
 	
     public static void console(String s, boolean warning)
