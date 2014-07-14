@@ -1,17 +1,17 @@
-photoreal.config.cat.clientOnly.name=Client Only
+photoreal.config.cat.clientOnly.name=Alleen client
 photoreal.config.cat.gameplay.name=Gameplay
 
-photoreal.config.cat.clientOnly.comment=These settings affect only the client that loads the mod.
-photoreal.config.cat.gameplay.comment=These options affect the gameplay while using the mod.
+photoreal.config.cat.clientOnly.comment=Deze instellingen hebben alleen effect op de client die de mod laad.
+photoreal.config.cat.gameplay.comment=Deze instellingen hebben alleen effect op de gameplay terwijl je de mod gebruikt.
 
-photoreal.config.prop.cameraFreq.name=Camera PoV Update Frequency
-photoreal.config.prop.cameraRecharge.name=Camera Recharge Rate
-photoreal.config.prop.photorealDuration.name=Photoreal Duration
-photoreal.config.prop.cameraRarity.name=Camera Rarity
+photoreal.config.prop.cameraFreq.name=Camera PoV Update Frequentie
+photoreal.config.prop.cameraRecharge.name=Camera Herlaad Ratio 
+photoreal.config.prop.photorealDuration.name=Photoreal Tijdsduur
+photoreal.config.prop.cameraRarity.name=Camera Rarigheid
 
-photoreal.config.prop.cameraFreq.comment=How often can the camera screen update it's Point of view?
-photoreal.config.prop.cameraRecharge.comment=What's the recharge rate of the camera's flash?
-photoreal.config.prop.photorealDuration.comment=How long does the "Photoreal" effect last?
-photoreal.config.prop.cameraRarity.comment=The rarity of cameras in mineshaft corridors?
+photoreal.config.prop.cameraFreq.comment=Hoe veel kan de camera scherm zijn PoV updaten?
+photoreal.config.prop.cameraRecharge.comment=Wat is de herlaad ratio van de camera's flits?
+photoreal.config.prop.photorealDuration.comment=Hoe lang duurt de "Photoreal" effect?
+photoreal.config.prop.cameraRarity.comment=The rarity of cameras in mineshaft corridors? De rarigheid van cameras in mineshaft gangen?
 
 item.PhotorealCamera.name=Camera
