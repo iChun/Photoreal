@@ -6,6 +6,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import ichun.client.render.RendererHelper;
+import ichun.common.core.EntityHelperBase;
 import ichun.common.core.util.ObfHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
@@ -85,7 +86,7 @@ public class TickHandlerClient
 
                     float progress = 1.0F - (lookingDownCameraTimer / 10F);
 
-                    EntityOtherPlayerMP fakePlayer = new EntityOtherPlayerMP(mc.theWorld, new GameProfile("MorphClientDummyPlayer", mc.thePlayer.getCommandSenderName()));
+                    EntityOtherPlayerMP fakePlayer = new EntityOtherPlayerMP(mc.theWorld, new GameProfile(EntityHelperBase.uuidExample, mc.thePlayer.getCommandSenderName()));
                     mc.renderViewEntity = fakePlayer;
 
                     List ents = photo.worldObj.getEntitiesWithinAABBExcludingEntity(photo, photo.boundingBox.expand(0.1D, 0.1D, 0.1D));
@@ -239,7 +240,7 @@ public class TickHandlerClient
                 {
                     if(renderCameraOverlay)
                     {
-                        ScaledResolution scaledresolution = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+                        ScaledResolution scaledresolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
                         int width = scaledresolution.getScaledWidth();
                         int height = scaledresolution.getScaledHeight();
 
