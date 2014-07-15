@@ -1,0 +1,17 @@
+photoreal.config.cat.clientOnly.name=Kun Klient
+photoreal.config.cat.gameplay.name=Gameplay
+
+photoreal.config.cat.clientOnly.comment=Disse indstillinger påvirker kun klienten, som indlæser mod.
+photoreal.config.cat.gameplay.comment=Disse indstillinger påvirker gameplayet, mens du bruger moddet.
+
+photoreal.config.prop.cameraFreq.name=Kamera PoV Opdater Frekvens
+photoreal.config.prop.cameraRecharge.name=Kamera Genoplad Rate
+photoreal.config.prop.photorealDuration.name=Photoreal Varighed
+photoreal.config.prop.cameraRarity.name=Kamera Sjældenhed
+
+photoreal.config.prop.cameraFreq.comment=Hvor ofte kan kameraskærmen opdatere synspunktet?
+photoreal.config.prop.cameraRecharge.comment=Hvad er infiltration på kameraets blitz?
+photoreal.config.prop.photorealDuration.comment=Hvor lang tid tager det for "Photoreal" at genoplade?
+photoreal.config.prop.cameraRarity.comment=Sjældenhed kameraer i mineskakt korridorer?
+
+item.PhotorealCamera.name=Kamera
