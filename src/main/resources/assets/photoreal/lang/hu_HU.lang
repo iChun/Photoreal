@@ -1,0 +1,17 @@
+photoreal.config.cat.clientOnly.name=Csak Kliens
+photoreal.config.cat.gameplay.name=Játék
+
+photoreal.config.cat.clientOnly.comment=Ezek a beállítások csak a kliensre érvényesek ami betölti a modot.
+photoreal.config.cat.gameplay.comment=Ezek a beállítások hatással lesznek a játékra amig használod a modot.
+
+photoreal.config.prop.cameraFreq.name=Kamera PoV Frissítési Frekvencia
+photoreal.config.prop.cameraRecharge.name=Kamera Újratöltési Aránya
+photoreal.config.prop.photorealDuration.name=Photoreal Időtartama
+photoreal.config.prop.cameraRarity.name=Kamera Ritkasága
+
+photoreal.config.prop.cameraFreq.comment=Milyen gyakran frissűljön a Kamera Képernyője amikor a Kamera szemszögét használod?
+photoreal.config.prop.cameraRecharge.comment=Mi legyen az újratöltési ideje a Kamera vakujának?
+photoreal.config.prop.photorealDuration.comment=Meddig tartson a "Photoreal"?
+photoreal.config.prop.cameraRarity.comment=A Kamerák ritkasága a mineshaft folyosóin?
+
+item.PhotorealCamera.name=Kamera
