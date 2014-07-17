@@ -120,21 +120,9 @@ public class TickHandlerClient
 
                     if(photo.fogR == 1.0D && photo.fogG == 1.0D && photo.fogB == 1.0D)
                     {
-                        try
-                        {
-                            photo.fogR = (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorRed);
-                            photo.fogG = (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorGreen);
-                            photo.fogB = (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorBlue);
-                        }
-                        catch(Exception e)
-                        {
-                            e.printStackTrace();
-                            ObfHelper.obfWarning();
-                            Vec3 fog = Minecraft.getMinecraft().theWorld.getFogColor(1.0F);
-                            photo.fogR = fog.xCoord;
-                            photo.fogG = fog.yCoord;
-                            photo.fogB = fog.zCoord;
-                        }
+                        photo.fogR = mc.entityRenderer.fogColorRed;
+                        photo.fogG = mc.entityRenderer.fogColorGreen;
+                        photo.fogB = mc.entityRenderer.fogColorBlue;
                     }
 
                     mc.gameSettings.thirdPersonView = tp;
@@ -181,19 +169,19 @@ public class TickHandlerClient
                         {
                             try
                             {
-                                ObfuscationReflectionHelper.setPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, 1.0F, ObfHelper.equippedProgress);
-                                ObfuscationReflectionHelper.setPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, 1.0F, ObfHelper.prevEquippedProgress);
-                                ObfuscationReflectionHelper.setPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, mc.thePlayer.inventory.getCurrentItem(), ObfHelper.itemToRender);
-                                ReflectionHelper.setPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, mc.thePlayer.inventory.currentItem, ObfHelper.equippedItemSlot);
+                                mc.entityRenderer.itemRenderer.equippedProgress = 1.0F;
+                                mc.entityRenderer.itemRenderer.prevEquippedProgress = 1.0F;
+                                mc.entityRenderer.itemRenderer.itemToRender = mc.thePlayer.inventory.getCurrentItem();
+                                mc.entityRenderer.itemRenderer.equippedItemSlot = mc.thePlayer.inventory.currentItem;
 
-                                int showName = (Integer)ObfuscationReflectionHelper.getPrivateValue(GuiIngame.class, mc.ingameGUI, ObfHelper.showNameTime);
+                                int showName = mc.ingameGUI.remainingHighlightTicks;
                                 if(showName == 0)
                                 {
                                     hasShownTooltip = true;
                                 }
                                 if(hasShownTooltip)
                                 {
-                                    ReflectionHelper.setPrivateValue(GuiIngame.class, mc.ingameGUI, 0, ObfHelper.showNameTime);
+                                    mc.ingameGUI.remainingHighlightTicks = 0;
                                 }
                             }
                             catch(Exception e)
@@ -214,7 +202,7 @@ public class TickHandlerClient
                     {
                         try
                         {
-                            if((Float)(ObfuscationReflectionHelper.getPrivateValue(ItemRenderer.class, mc.entityRenderer.itemRenderer, ObfHelper.equippedProgress)) >= 1.0F)
+                            if(mc.entityRenderer.itemRenderer.equippedProgress >= 1.0F)
                             {
                                 prevCurItem = mc.thePlayer.inventory.currentItem;
                             }

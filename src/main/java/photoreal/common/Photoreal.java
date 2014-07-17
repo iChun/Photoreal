@@ -31,7 +31,7 @@ import java.util.EnumMap;
 
 @Mod(modid = "Photoreal", name = "Photoreal",
 			version = Photoreal.version,
-            dependencies = "required-after:iChunUtil@[" + iChunUtil.versionMC +".1.0,)",
+            dependencies = "required-after:iChunUtil@[" + iChunUtil.versionMC +".0.0,)",
             acceptableRemoteVersions = "[" + iChunUtil.versionMC +".0.0," + iChunUtil.versionMC + ".1.0)"
 				)
 public class Photoreal
@@ -80,7 +80,7 @@ public class Photoreal
 
         channels = ChannelHandler.getChannelHandlers("Photoreal", PacketTakeSnapshot.class);
 
-        ModVersionChecker.register_iChunMod(new ModVersionInfo("Photoreal", "1.7", version, false));
+        ModVersionChecker.register_iChunMod(new ModVersionInfo("Photoreal", iChunUtil.versionOfMC, version, false));
 
         FMLInterModComms.sendMessage("BackTools", "blacklist", new ItemStack(Photoreal.itemCamera, 1));
 	}

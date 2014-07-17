@@ -72,21 +72,9 @@ public class RenderPhotoreal extends Render
 
                 if(photo.fogR == 1.0D && photo.fogG == 1.0D && photo.fogB == 1.0D)
                 {
-                    try
-                    {
-                        photo.fogR = (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorRed);
-                        photo.fogG = (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorGreen);
-                        photo.fogB = (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorBlue);
-                    }
-                    catch(Exception e)
-                    {
-                        e.printStackTrace();
-                        ObfHelper.obfWarning();
-                        Vec3 fog = mc.theWorld.getFogColor(1.0F);
-                        photo.fogR = fog.xCoord;
-                        photo.fogG = fog.yCoord;
-                        photo.fogB = fog.zCoord;
-                    }
+                    photo.fogR = mc.entityRenderer.fogColorRed;
+                    photo.fogG = mc.entityRenderer.fogColorGreen;
+                    photo.fogB = mc.entityRenderer.fogColorBlue;
                 }
                 GL11.glColor3f((float)photo.fogR, (float)photo.fogG, (float)photo.fogB);
                 tessellator.startDrawingQuads();

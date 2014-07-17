@@ -93,7 +93,7 @@ public class ModelCamera extends ModelBase
             try
             {
                 Minecraft mc = Minecraft.getMinecraft();
-                GL11.glColor3f((Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorRed), (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorGreen), (Float)ObfuscationReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, ObfHelper.fogColorBlue));
+                GL11.glColor3f(mc.entityRenderer.fogColorRed, mc.entityRenderer.fogColorGreen, mc.entityRenderer.fogColorBlue);
             }
             catch(Exception e)
             {
