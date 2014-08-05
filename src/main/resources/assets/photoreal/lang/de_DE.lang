@@ -5,8 +5,8 @@ photoreal.config.cat.clientOnly.comment=Diese Einstellungen beeinflussen nur den
 photoreal.config.cat.gameplay.comment=Diese Einstellungen beeinflussen das Gameplay, während der Mod läuft.
 
 photoreal.config.prop.cameraFreq.name=Kameraperspektivenupdatefrequenz
-photoreal.config.prop.cameraRecharge.name=Kamera-Aufladerate
-photoreal.config.prop.photorealDuration.name=Photoreal-Dauer
+photoreal.config.prop.cameraRecharge.name=Kamera-Aufladezeit
+photoreal.config.prop.photorealDuration.name=Fotorealitäts-Dauer
 photoreal.config.prop.cameraRarity.name=Kamera-Seltenheit
 
 photoreal.config.prop.cameraFreq.comment=Anzahl der möglichen updatebaren Bilder aus der Sicht
