@@ -31,7 +31,7 @@ public class EventHandler
             ItemStack currentInv = mc.thePlayer.inventory.getCurrentItem();
             if(currentInv != null && currentInv.getItem() == Photoreal.itemCamera)
             {
-                if(event.keyBind.isPressed())
+                if(event.keyBind.isPressed() && event.keyBind.isMinecraftBind())
                 {
                     if(event.keyBind.keyIndex == mc.gameSettings.keyBindAttack.getKeyCode())
                     {
