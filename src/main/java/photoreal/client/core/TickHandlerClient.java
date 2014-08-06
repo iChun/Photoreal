@@ -86,7 +86,7 @@ public class TickHandlerClient
 
                     float progress = 1.0F - (lookingDownCameraTimer / 10F);
 
-                    EntityOtherPlayerMP fakePlayer = new EntityOtherPlayerMP(mc.theWorld, new GameProfile(EntityHelperBase.uuidExample, mc.thePlayer.getCommandSenderName()));
+                    EntityOtherPlayerMP fakePlayer = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
                     mc.renderViewEntity = fakePlayer;
 
                     List ents = photo.worldObj.getEntitiesWithinAABBExcludingEntity(photo, photo.boundingBox.expand(0.1D, 0.1D, 0.1D));
