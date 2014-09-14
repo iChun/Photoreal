@@ -1,0 +1,16 @@
+photoreal.config.cat.clientOnly.name=Apenas Cliente
+photoreal.config.cat.gameplay.name=Gameplay
+
+photoreal.config.cat.clientOnly.comment=Essas opções apenas afetam o cliente que carrega o mod.
+photoreal.config.cat.gameplay.comment=Essas opções afetam a gameplay enquanto usando o mod.
+
+photoreal.config.prop.cameraFreq.name=Frequência de Atualização do PdV da Câmera
+photoreal.config.prop.cameraRecharge.name=Taxa de Recarga da Câmera
+photoreal.config.prop.photorealDuration.name=Duração do Fotorreal
+photoreal.config.prop.cameraRarity.name=Raridade da Câmera
+photoreal.config.prop.cameraFreq.comment=O Ponto de Vista da tela da câmera pode ser atualizado com que frequência?
+photoreal.config.prop.cameraRecharge.comment=Qual é a taxa de recarga do flash da câmera?
+photoreal.config.prop.photorealDuration.comment=Por quanto tempo dura o efeito "Fotorreal"?
+photoreal.config.prop.cameraRarity.comment=A raridade das câmeras em minas abandonadas?
+
+item.PhotorealCamera.name=Câmera
