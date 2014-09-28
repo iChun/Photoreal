@@ -1,13 +1,13 @@
-photoreal.config.cat.clientOnly.name=Клиентские настройки
-photoreal.config.cat.gameplay.name=Игровые настройки
+photoreal.config.cat.clientOnly.name=Только клиент
+photoreal.config.cat.gameplay.name=Игровой процесс
 
-photoreal.config.cat.clientOnly.comment=Эти настройки влияют лишь на сам игровой клиент Minecraft.
-photoreal.config.cat.gameplay.comment=Эти настройки влияют на игру при использовании данного мода.
+photoreal.config.cat.clientOnly.comment=Эти настройки влияют лишь на клиент, который использует модификацию.
+photoreal.config.cat.gameplay.comment=Эти настройки влияют на игровой процесс, когда используется данная модификация.
 
 photoreal.config.prop.cameraFreq.name=Время обновления картинки на экране
 photoreal.config.prop.cameraRecharge.name=Время перезарядки камеры
 photoreal.config.prop.photorealDuration.name=Время "жизни" фото в мире
-photoreal.config.prop.cameraRarity.name=Шанс нахождения камеры
+photoreal.config.prop.cameraRarity.name=Редкость камеры
 
 photoreal.config.prop.cameraFreq.comment=Как часто картинка на экране обновляется?
 photoreal.config.prop.cameraRecharge.comment=Сколько перезаряжается вспышка камеры?
