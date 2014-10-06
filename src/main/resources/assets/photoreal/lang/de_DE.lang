@@ -1,4 +1,4 @@
-photoreal.config.cat.clientOnly.name=Diese Einstellungen ist nur für den Client
+photoreal.config.cat.clientOnly.name=Diese Einstellungen sind nur für den Client
 photoreal.config.cat.gameplay.name=Gameplay
 
 photoreal.config.cat.clientOnly.comment=Diese Einstellungen beeinflussen nur den Client, auf dem der Mod läuft.
