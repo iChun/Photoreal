@@ -321,6 +321,7 @@ public class TickHandlerClient
     @SubscribeEvent
     public void worldTick(TickEvent.ClientTickEvent event)
     {
+        //TODO check for current item?? Why isn't there one????
         Minecraft mc = Minecraft.getMinecraft();
         WorldClient world = mc.theWorld;
         if(event.phase == TickEvent.Phase.END && world != null)
