@@ -4,14 +4,14 @@ photoreal.config.cat.gameplay.name=Gameplay
 photoreal.config.cat.clientOnly.comment=Diese Einstellungen beeinflussen nur den Client, auf dem der Mod läuft.
 photoreal.config.cat.gameplay.comment=Diese Einstellungen beeinflussen das Gameplay, während der Mod läuft.
 
-photoreal.config.prop.cameraFreq.name=Kameraperspektivenupdatefrequenz
+photoreal.config.prop.cameraFreq.name=Kameraperspektiven-Updatefrequenz
 photoreal.config.prop.cameraRecharge.name=Kamera-Aufladezeit
 photoreal.config.prop.photorealDuration.name=Fotorealitäts-Dauer
 photoreal.config.prop.cameraRarity.name=Kamera-Seltenheit
 
-photoreal.config.prop.cameraFreq.comment=Anzahl der möglichen updatebaren Bilder aus der Sicht
-photoreal.config.prop.cameraRecharge.comment=Aufladerate der Kamera
-photoreal.config.prop.photorealDuration.comment=Dauer des "Photoreal"-Effekt
-photoreal.config.prop.cameraRarity.comment=Generierung der Kamera in Mineshafts
+photoreal.config.prop.cameraFreq.comment=Wie häufig kann der Kamera-Bildschirm die Perspektive aktualisieren?
+photoreal.config.prop.cameraRecharge.comment=Wie lange braucht die Kamera zum Aufladen?
+photoreal.config.prop.photorealDuration.comment=Wie lang ist die Dauer des "Photoreal"-Effekts?
+photoreal.config.prop.cameraRarity.comment=Die Seltenheit von Kameras in Minenschächten?
 
 item.PhotorealCamera.name=Kamera
